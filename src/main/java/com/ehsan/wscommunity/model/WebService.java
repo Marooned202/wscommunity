@@ -65,13 +65,13 @@ public class WebService implements Agent {
 			addWebServiceFeature((WebServiceFeature)iter.next());
 	}
 
-	public void addWebServiceFeature (WebServiceFeature newWebService) {
-		if (newWebService == null)
+	public void addWebServiceFeature (WebServiceFeature newFeature) {
+		if (newFeature == null)
 			return;
 		if (this.featureList == null)
 			this.featureList = new ArrayList<WebServiceFeature>();
-		if (!this.featureList.contains(newWebService))
-			this.featureList.add(newWebService);
+		if (!this.featureList.contains(newFeature))
+			this.featureList.add(newFeature);
 	}
 
 	public void removeFeature(WebService oldWebService) {
