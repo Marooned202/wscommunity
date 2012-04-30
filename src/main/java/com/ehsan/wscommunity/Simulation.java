@@ -1,5 +1,6 @@
 package com.ehsan.wscommunity;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +19,10 @@ public class Simulation {
 	List <WebService> webServiceList = new ArrayList<WebService>();
 	List <Cluster> centroids = new ArrayList<Cluster>(); 
 
-	private final int CLUSTER_NUMBER = 2; 
-	private final int WEBSERVICE_NUMBER = 5; 
+	private final int CLUSTER_NUMBER = 3; 
+	private final int WEBSERVICE_NUMBER = 10; 
 	private final int FEATURE_NUMBER = 2; 
+	private final DecimalFormat df = new DecimalFormat("#.###");
 
 	public void initialize()
 	{
@@ -59,8 +61,8 @@ public class Simulation {
 		reportCentroids(2);
 		boolean centroidChanged = true;
 		int iterNumber = 0;
-
-		log.info("*****************************************");
+		
+		long start = new java.util.Date().getTime();
 		
 		while (centroidChanged) 
 		{		
@@ -85,7 +87,7 @@ public class Simulation {
 			}
 
 			reportWebServices(1);
-			//reportCentroids(1);
+			reportCentroids(2);
 			
 			// Calculate New Centroids
 			int i = 0;
@@ -103,23 +105,31 @@ public class Simulation {
 						}
 					}
 				}
-				log.info("Centroid: " + centroid.getCluster() + " , Count: " + centroid.getCount());
+				//log.info("Centroid: " + centroid.getCluster() + " , Count: " + centroid.getCount());
 				if (centroid.getCount() != 0) {
 					for (WebServiceFeature feature: centroid.getFeatureList()) {
 						feature.setValue(feature.getValue() / centroid.getCount());					
-						log.info("Feature: " + feature.getId() + ", Value: " + feature.getValue());
+						//log.info("Feature: " + feature.getId() + ", Value: " + df.format(feature.getValue()));
 					}
 				}
 			}			
 		}
+		
+		long end = new java.util.Date().getTime();
+		
+		log.info("-----------------------------------------------");
+		log.info("K-Mean took: " + (end-start) + "ms");
+		reportWebServices(2);
+		reportCentroids(2);
 	}
 
 	private void reportWebServices(int level) 
 	{
+		int i = 0;
 		for (WebService webService:webServiceList) {
-			log.info("WebService-: " + webService.getCluster());
+			log.info("WebService["+ (i++) +"]: " + webService.getCluster());
 			for (WebServiceFeature feature: webService.getFeatureList()) {
-				if (level > 1) log.info("Feature: " + feature.getId() + ", Value: " + feature.getValue());
+				if (level > 1) log.info("Feature: " + feature.getId() + ", Value: " + df.format(feature.getValue()));
 			}
 		}	
 	}
@@ -128,9 +138,9 @@ public class Simulation {
 	private void reportCentroids(int level) 
 	{
 		for (Cluster cluster:centroids) {
-			log.info("Centroid-: " + cluster.getCluster());	
+			log.info("Centroid-: " + cluster.getCluster() + ", Count: " + cluster.getCount());	
 			for (WebServiceFeature feature: cluster.getFeatureList()) {
-				if (level > 1) log.info("Feature: " + feature.getId() + ", Value: " + feature.getValue());
+				if (level > 1) log.info("Feature: " + feature.getId() + ", Value: " + df.format(feature.getValue()));
 			}
 		}
 	}
