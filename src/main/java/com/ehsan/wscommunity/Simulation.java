@@ -11,6 +11,7 @@ import sun.rmi.runtime.Log;
 import com.ehsan.wscommunity.model.Cluster;
 import com.ehsan.wscommunity.model.WebService;
 import com.ehsan.wscommunity.model.WebServiceFeature;
+import com.ehsan.wscommunity.util.Constants;
 
 public class Simulation {
 
@@ -25,17 +26,86 @@ public class Simulation {
 	private final DecimalFormat df = new DecimalFormat("#.###");
 
 	public void initialize()
-	{
+	{		
+		int featureNumber = 0;
 		for (int i = 0;i < WEBSERVICE_NUMBER; i++) 
 		{
+			featureNumber = 0;
 			WebService webService = new WebService();		
-			for (int j = 0;j < FEATURE_NUMBER; j++)
-			{
-				WebServiceFeature feature = new WebServiceFeature();
-				feature.setId(j);
-				feature.setValue(Math.random());
-				webService.addWebServiceFeature(feature);
-			}						
+			//for (int j = 0;j < FEATURE_NUMBER; j++)
+			//{
+			//	WebServiceFeature feature = new WebServiceFeature();
+			//	feature.setId(j);
+			//	feature.setValue(Math.random());
+			//	webService.addWebServiceFeature(feature);
+			//}						
+						
+			WebServiceFeature feature = new WebServiceFeature();
+			feature.setId(featureNumber++);
+			feature.setValue(Math.random());
+			feature.setName(Constants.CommunityFeatureNames[featureNumber-1]);
+			webService.addWebServiceFeature(feature);
+				
+			feature = new WebServiceFeature();
+			feature.setId(featureNumber++);
+			feature.setValue(Math.random());
+			feature.setName(Constants.CommunityFeatureNames[featureNumber-1]);
+			webService.addWebServiceFeature(feature);
+			
+			feature = new WebServiceFeature();
+			feature.setId(featureNumber++);
+			feature.setValue(Math.random());
+			feature.setName(Constants.CommunityFeatureNames[featureNumber-1]);
+			webService.addWebServiceFeature(feature);
+			
+			feature = new WebServiceFeature();
+			feature.setId(featureNumber++);
+			feature.setValue(Math.random());
+			feature.setName(Constants.CommunityFeatureNames[featureNumber-1]);
+			webService.addWebServiceFeature(feature);
+			
+			feature = new WebServiceFeature();
+			feature.setId(featureNumber++);
+			feature.setValue(Math.random());
+			feature.setName(Constants.CommunityFeatureNames[featureNumber-1]);
+			webService.addWebServiceFeature(feature);
+			
+			feature = new WebServiceFeature();
+			feature.setId(featureNumber++);
+			feature.setValue(Math.random());
+			feature.setName(Constants.CommunityFeatureNames[featureNumber-1]);
+			webService.addWebServiceFeature(feature);
+			
+			feature = new WebServiceFeature();
+			feature.setId(featureNumber++);
+			feature.setValue(Math.random());
+			feature.setName(Constants.CommunityFeatureNames[featureNumber-1]);
+			webService.addWebServiceFeature(feature);
+			
+			feature = new WebServiceFeature();
+			feature.setId(featureNumber++);
+			feature.setValue(Math.random());
+			feature.setName(Constants.CommunityFeatureNames[featureNumber-1]);
+			webService.addWebServiceFeature(feature);
+			
+			feature = new WebServiceFeature();
+			feature.setId(featureNumber++);
+			feature.setValue(Math.random());
+			feature.setName(Constants.CommunityFeatureNames[featureNumber-1]);
+			webService.addWebServiceFeature(feature);
+			
+			feature = new WebServiceFeature();
+			feature.setId(featureNumber++);
+			feature.setValue(Math.random());
+			feature.setName(Constants.CommunityFeatureNames[featureNumber-1]);
+			webService.addWebServiceFeature(feature);
+			
+			feature = new WebServiceFeature();
+			feature.setId(featureNumber++);
+			feature.setValue(Math.random());
+			feature.setName(Constants.CommunityFeatureNames[featureNumber-1]);
+			webService.addWebServiceFeature(feature);
+			
 			webServiceList.add(webService);
 		}
 
@@ -43,10 +113,11 @@ public class Simulation {
 		{
 			Cluster cluster = new Cluster();	
 			cluster.setCluster(i);
-			for (int j = 0;j < FEATURE_NUMBER; j++)
+			for (int j = 0;j < featureNumber; j++)
 			{
 				WebServiceFeature feature = new WebServiceFeature();
 				feature.setId(j);
+				feature.setName(Constants.CommunityFeatureNames[j]);
 				feature.setValue(Math.random());
 				cluster.addWebServiceFeature(feature);
 			}
@@ -129,7 +200,7 @@ public class Simulation {
 		for (WebService webService:webServiceList) {
 			log.info("WebService["+ (i++) +"]: " + webService.getCluster());
 			for (WebServiceFeature feature: webService.getFeatureList()) {
-				if (level > 1) log.info("Feature: " + feature.getId() + ", Value: " + df.format(feature.getValue()));
+				if (level > 1) log.info("Feature["+ (feature.getId()) +"]: " + feature.getName() + ", Value: " + df.format(feature.getValue()));
 			}
 		}	
 	}
@@ -140,7 +211,7 @@ public class Simulation {
 		for (Cluster cluster:centroids) {
 			log.info("Centroid-: " + cluster.getCluster() + ", Count: " + cluster.getCount());	
 			for (WebServiceFeature feature: cluster.getFeatureList()) {
-				if (level > 1) log.info("Feature: " + feature.getId() + ", Value: " + df.format(feature.getValue()));
+				if (level > 1) log.info("Feature["+ (feature.getId()) +"]: " + feature.getName() + ", Value: " + df.format(feature.getValue()));
 			}
 		}
 	}
