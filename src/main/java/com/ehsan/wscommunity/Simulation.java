@@ -24,8 +24,8 @@ public class Simulation {
 	List <WebService> webServiceList = new ArrayList<WebService>();
 	List <Cluster> centroids = new ArrayList<Cluster>(); 
 
-	private final int CLUSTER_NUMBER_WEBSERVICES = 8; 
-	private final int WEBSERVICE_NUMBER = 100;
+	private final int CLUSTER_NUMBER_WEBSERVICES = 5; 
+	private final int WEBSERVICE_NUMBER = 50;
 	
 	private final int CLUSTER_NUMBER_COMMUNITY = 3;
 	private final int COMMUNITY_NUMBER = 10;
@@ -500,7 +500,7 @@ public class Simulation {
 	
 	public void run ()
 	{
-		//runCommunitiesSimulation();
-		runWebServiceSimulation();		
+		runCommunitiesSimulation();
+		//runWebServiceSimulation();		
 	}
 }
