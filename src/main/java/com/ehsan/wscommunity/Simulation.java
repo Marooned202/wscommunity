@@ -24,8 +24,10 @@ public class Simulation {
 	List <WebService> webServiceList = new ArrayList<WebService>();
 	List <Cluster> centroids = new ArrayList<Cluster>(); 
 
+
 	private final int CLUSTER_NUMBER_WEBSERVICES = 5; 
 	private final int WEBSERVICE_NUMBER = 50;
+
 	
 	private final int CLUSTER_NUMBER_COMMUNITY = 3;
 	private final int COMMUNITY_NUMBER = 10;
@@ -41,7 +43,7 @@ public class Simulation {
 	{		
 		
 		int featureNumber = 0;
-		for (int i = 0;i < WEBSERVICE_NUMBER; i++) 
+		for (int i = 0;i < COMMUNITY_NUMBER; i++) 
 		{
 			featureNumber = 0;
 			WebService webService = new WebService();		
@@ -142,7 +144,7 @@ public class Simulation {
 	public void initializeWebService()
 	{		
 		int featureNumber = 0;
-		for (int i = 0;i < COMMUNITY_NUMBER; i++) 
+		for (int i = 0;i < WEBSERVICE_NUMBER; i++) 
 		{
 			featureNumber = 0;
 			WebService webService = new WebService();		
