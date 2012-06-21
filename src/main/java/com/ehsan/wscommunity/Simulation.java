@@ -422,19 +422,39 @@ public class Simulation {
 		
 		assignThresholdsAndWeights();
 		
+		Cluster bestCluster = null;
+		double bestClusterGoodness = 0;
+		
 		goodness.clear();
 		for (Cluster cluster:centroids) {
 			if (cluster.getCount() == 0) continue;
 			double goodnessValue = 0; 	
 			String logLine = "";
 			for (WebServiceFeature feature: cluster.getFeatureList()) {
-				goodnessValue += feature.getValue() * weight.get(feature.getId());
-				logLine += feature.getName() + ":" + df.format(feature.getValue()) + " * " + df.format(weight.get(feature.getId())) + " + ";
+				goodnessValue += feature.getValue() * weight.get(feature.getId());				
+				logLine += feature.getName() + ":" + df.format(feature.getValue()) + " * " + df.format(weight.get(feature.getId())) + " + ";				
 			}
 			goodness.put(cluster, goodnessValue);
 			log.info("Goodness["+cluster.getCluster()+"]: " + df.format(goodnessValue) + ", Count: " + cluster.getCount());
 			log.info("Goodness["+cluster.getCluster()+"]: " + logLine);
+			
+			if (goodnessValue > bestClusterGoodness) {
+				bestClusterGoodness = goodnessValue;
+				bestCluster = cluster;
+			}
 		}		
+		
+		// Reporting Best Cluster and its members
+		log.info("Best Cluster: " + bestCluster.getCluster() + " ,Goodness Value: " + bestClusterGoodness);
+		int i = 0;
+		for (WebService webService:webServiceList) {
+			if (webService.getCluster() != bestCluster.getCluster()) continue;
+			log.info("WebService["+ (i++) +"]: " + webService.getCluster());			 
+			for (WebServiceFeature feature: webService.getFeatureList()) {
+				log.info("Feature["+ (feature.getId()) +"]: " + feature.getName() + ", Value: " + df.format(feature.getValue()));
+			}
+		}	
+		
 		
 	}
 	
