@@ -26,11 +26,11 @@ public class Simulation {
 
 
 	private final int CLUSTER_NUMBER_WEBSERVICES = 5; 
-	private final int WEBSERVICE_NUMBER = 50;
+	private final int WEBSERVICE_NUMBER = 100;
 
 	
 	private final int CLUSTER_NUMBER_COMMUNITY = 3;
-	private final int COMMUNITY_NUMBER = 10;
+	private final int COMMUNITY_NUMBER = 30;
 		
 	//private final int FEATURE_NUMBER = 2; 
 	
@@ -502,7 +502,7 @@ public class Simulation {
 	
 	public void run ()
 	{
-		runCommunitiesSimulation();
-		//runWebServiceSimulation();		
+		//runCommunitiesSimulation();
+		runWebServiceSimulation();		
 	}
 }
