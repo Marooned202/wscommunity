@@ -10,8 +10,17 @@ public class WebService implements Agent {
 		
 	private static final Logger log = Logger.getLogger(WebService.class.getName());
 	
+	int rate;
 	List<WebServiceFeature> featureList = new ArrayList <WebServiceFeature>();	
-	int cluster;
+	int cluster;	
+	
+	public int getRate() {
+		return rate;
+	}
+
+	public void setRate(int rate) {
+		this.rate = rate;
+	}
 
 	public int getCluster() {
 		return cluster;
