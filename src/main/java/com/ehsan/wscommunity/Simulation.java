@@ -275,11 +275,8 @@ public class Simulation {
 	}
 
 
-	public List <WebService> runCommunitiesSimulation ()
-	{
-		initializeCommunity();
-		reportWebServices(2);
-		reportCentroids(2);
+	public List <WebService> runCommunitiesClusteringSelection ()
+	{		
 		boolean centroidChanged = true;
 		int iterNumber = 0;
 
@@ -385,11 +382,8 @@ public class Simulation {
 		return selectedList;
 	}
 
-	public List <WebService> runWebServiceSimulation ()
-	{
-		initializeWebService();
-		reportWebServices(2);
-		reportCentroids(2);
+	public List <WebService> runWebServiceClusteringSelecton ()
+	{		
 		boolean centroidChanged = true;
 		int iterNumber = 0;
 
@@ -494,6 +488,40 @@ public class Simulation {
 
 		return selectedList;
 	}
+	
+	
+	
+	public List <WebService> runWebServiceRandomSelecton (int size)
+	{		
+		List <WebService> selectedList = new ArrayList<WebService>();
+		
+		Random random = new Random();
+		for (int i = 0; i < size; i++) {
+			WebService selected = webServiceList.get(random.nextInt(webServiceList.size()));
+			if (selectedList.contains(selected))
+				i--;
+			else 
+				selectedList.add(selected);
+		}
+
+		return selectedList;
+	}
+	
+	public List <WebService> runCommunityRandomSelecton (int size)
+	{		
+		List <WebService> selectedList = new ArrayList<WebService>();
+		
+		Random random = new Random();
+		for (int i = 0; i < size; i++) {
+			WebService selected = webServiceList.get(random.nextInt(webServiceList.size()));
+			if (selectedList.contains(selected))
+				i--;
+			else 
+				selectedList.add(selected);
+		}
+
+		return selectedList;
+	}
 
 
 	private void assignThresholdsAndWeights() 
@@ -562,12 +590,30 @@ public class Simulation {
 	public void run ()
 	{
 		List <WebService> selectedList = null;
+				
+		// Web  Services Simulation
+		initializeWebService();
+		reportWebServices(2);
+		reportCentroids(2);
 		
-		selectedList = runWebServiceSimulation();
+		selectedList = runWebServiceClusteringSelecton();
 		simulateModelForWebServices (selectedList);
 		
-		selectedList = runCommunitiesSimulation();				
+		selectedList = runWebServiceRandomSelecton(selectedList.size());				
+		simulateModelForWebServices (selectedList);
+		
+			
+		// Community Simulation
+		initializeCommunity();
+		reportWebServices(2);
+		reportCentroids(2);
+		
+		selectedList = runCommunitiesClusteringSelection();				
 		simulateModelForCommunities (selectedList);
+		
+		selectedList = runCommunityRandomSelecton(selectedList.size());
+		simulateModelForCommunities (selectedList);
+	
 	}
 
 	public void simulateModelForCommunities(List<WebService> selectedList) 
