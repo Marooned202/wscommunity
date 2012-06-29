@@ -45,6 +45,7 @@ public class Simulation {
 	public void initializeCommunity()
 	{		
 
+		webServiceList.clear();
 		int featureNumber = 0;
 		for (int i = 0;i < COMMUNITY_NUMBER; i++) 
 		{
@@ -127,6 +128,7 @@ public class Simulation {
 			webServiceList.add(webService);
 		}
 
+		centroids.clear();
 		for (int i = 0;i < CLUSTER_NUMBER_COMMUNITY; i++) 
 		{
 			Cluster cluster = new Cluster();	
@@ -147,6 +149,7 @@ public class Simulation {
 	public void initializeWebService()
 	{		
 		int featureNumber = 0;
+		webServiceList.clear();
 		for (int i = 0;i < WEBSERVICE_NUMBER; i++) 
 		{
 			featureNumber = 0;
@@ -254,6 +257,7 @@ public class Simulation {
 			webServiceList.add(webService);
 		}
 
+		centroids.clear();
 		for (int i = 0;i < CLUSTER_NUMBER_WEBSERVICES; i++) 
 		{
 			Cluster cluster = new Cluster();	
@@ -558,10 +562,11 @@ public class Simulation {
 	public void run ()
 	{
 		List <WebService> selectedList = null;
-		selectedList = runCommunitiesSimulation();
-		//selectedList = runWebServiceSimulation();
-
-		//simulateModelForWebServices (selectedList);
+		
+		selectedList = runWebServiceSimulation();
+		simulateModelForWebServices (selectedList);
+		
+		selectedList = runCommunitiesSimulation();				
 		simulateModelForCommunities (selectedList);
 	}
 
