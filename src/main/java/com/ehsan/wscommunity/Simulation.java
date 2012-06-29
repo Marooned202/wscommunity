@@ -1,5 +1,8 @@
 package com.ehsan.wscommunity;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -181,7 +184,7 @@ public class Simulation {
 			feature.setValue(Math.random());
 			feature.setName(Constants.WebServiceFeatureNames[featureNumber-1]);
 			webService.addWebServiceFeature(feature);
-			
+
 			feature = new WebServiceFeature(); // 4 Latency
 			feature.setId(featureNumber++);
 			feature.setValue((Math.random() * webService.getFeatureByID(1).getValue()) / 2);
@@ -268,8 +271,7 @@ public class Simulation {
 	}
 
 
-
-	public void runCommunitiesSimulation ()
+	public List <WebService> runCommunitiesSimulation ()
 	{
 		initializeCommunity();
 		reportWebServices(2);
@@ -341,6 +343,9 @@ public class Simulation {
 
 		assignThresholdsAndWeights();
 
+		Cluster bestCluster = null;
+		double bestClusterGoodness = 0;
+		
 		goodness.clear();
 		for (Cluster cluster:centroids) {
 			if (cluster.getCount() == 0) continue;
@@ -353,7 +358,27 @@ public class Simulation {
 			goodness.put(cluster, goodnessValue);
 			log.info("Goodness["+cluster.getCluster()+"]: " + df.format(goodnessValue) + ", Count: " + cluster.getCount());
 			log.info("Goodness["+cluster.getCluster()+"]: " + logLine);
-		}				
+			
+			if (goodnessValue > bestClusterGoodness) {
+				bestClusterGoodness = goodnessValue;
+				bestCluster = cluster;
+			}
+		}	
+		
+		List <WebService> selectedList = new ArrayList<WebService>();
+		// Reporting Best Cluster and its members
+		log.info("Best Cluster: " + bestCluster.getCluster() + " ,Goodness Value: " + bestClusterGoodness);
+		int i = 0;
+		for (WebService webService:webServiceList) {
+			if (webService.getCluster() != bestCluster.getCluster()) continue;
+			selectedList.add(webService);
+			log.info("WebService["+ (i++) +"]: " + webService.getCluster());			 
+			for (WebServiceFeature feature: webService.getFeatureList()) {
+				log.info("Feature["+ (feature.getId()) +"]: " + feature.getName() + ", Value: " + df.format(feature.getValue()));
+			}
+		}
+
+		return selectedList;
 	}
 
 	public List <WebService> runWebServiceSimulation ()
@@ -533,30 +558,163 @@ public class Simulation {
 	public void run ()
 	{
 		List <WebService> selectedList = null;
-		//runCommunitiesSimulation();
-		selectedList = runWebServiceSimulation();
+		selectedList = runCommunitiesSimulation();
+		//selectedList = runWebServiceSimulation();
 
-		simulateModelForWebServices (selectedList);
+		//simulateModelForWebServices (selectedList);
+		simulateModelForCommunities (selectedList);
+	}
+
+	public void simulateModelForCommunities(List<WebService> selectedList) 
+	{
+
+		int HOURS = 100;
+
+		double[] numberOfRequests = new double[HOURS];
+		double[] satisfaction = new double[HOURS];
+		double[] executionTime = new double[HOURS];
+		double[] selection = new double[HOURS];
+		double[] inDemand = new double[HOURS];
+
+		double[] totalNumberOfRequests = new double[HOURS];
+		double[] totalSatisfaction = new double[HOURS];
+		double[] totalExecutionTime = new double[HOURS];
+		double[] totalSelection = new double[HOURS];
+		double[] totalInDemand = new double[HOURS];
+
+		Random random = new Random();
+
+		for (WebService webService:selectedList) {
+			//evaluateWebService(webService);
+			evaluateCommunity(webService);
+			//System.out.println(webService.getRate());
+		}
+		for (int hour = 0; hour < HOURS; hour++)
+		{
+			numberOfRequests[hour] = 0;
+			satisfaction[hour] = 0;
+			executionTime[hour] = 0;
+			selection[hour] = 0;
+			inDemand[hour] = 0;
+
+			totalNumberOfRequests[hour] = 0;
+			totalSatisfaction[hour] = 0;
+			totalExecutionTime[hour] = 0;
+			totalSelection[hour] = 0;
+			totalInDemand[hour] = 0;
+
+			for (WebService webService:selectedList) {
+				if (webService.getRate() == 3) 
+				{
+					numberOfRequests[hour] += (random.nextInt(4)) + 7;  // 7-10
+					satisfaction[hour] += (random.nextInt(4)) + 7; // 7-10
+					executionTime[hour] += (random.nextInt(15)) + 6;  // 6-20
+					selection[hour] += (random.nextInt(4)/10.0) + 0.7;  // 0.7-1
+					inDemand[hour] += (random.nextInt(4)) + 7;  // 7-10
+
+				} else if (webService.getRate() == 2) 
+				{
+					numberOfRequests[hour] += (random.nextInt(3)) + 4;  // 7-10
+					satisfaction[hour] += (random.nextInt(3)) + 4; // 7-10
+					executionTime[hour] += (random.nextInt(11)) + 25;  // 6-20
+					selection[hour] += (random.nextInt(3)/10.0) + 0.4;  // 0.7-1
+					inDemand[hour] += (random.nextInt(3)) + 4;  // 7-10
+				} else if (webService.getRate() == 1) 
+				{
+					numberOfRequests[hour] += (random.nextInt(3)) + 1;  // 7-10
+					satisfaction[hour] += (random.nextInt(3)) + 1; // 7-10
+					executionTime[hour] += (random.nextInt(19)) + 42;  // 6-20
+					selection[hour] += (random.nextInt(3)/10.0) + 0.1;  // 0.7-1
+					inDemand[hour] += (random.nextInt(3)) + 1;  // 7-10
+				} 
+			}
+
+			numberOfRequests[hour] = numberOfRequests[hour]/selectedList.size();
+			satisfaction[hour] = satisfaction[hour]/selectedList.size();
+			executionTime[hour] = executionTime[hour]/selectedList.size();
+			selection[hour] = selection[hour]/selectedList.size();
+
+			if (hour > 1) 
+			{
+				totalNumberOfRequests[hour] = numberOfRequests[hour] + totalNumberOfRequests[hour-1];
+				totalSatisfaction[hour] = satisfaction[hour] + totalSatisfaction[hour-1];
+				totalExecutionTime[hour] = executionTime[hour] + totalExecutionTime[hour-1];
+				totalSelection[hour] = selection[hour] + totalSelection[hour-1];
+				totalInDemand[hour] = inDemand[hour] + totalInDemand[hour-1];
+			}								
+		}		
+
+		try {
+			PrintWriter out = new PrintWriter(new FileWriter("cm_number_of_requests_" + new java.util.Date().getTime() + ".txt")); 
+			System.out.println();
+			for (int i = 0; i < HOURS;i++)
+			{
+				System.out.print(totalNumberOfRequests[i] + ", ");
+				out.println(totalNumberOfRequests[i]);
+			}
+			out.close();
+
+			out = new PrintWriter(new FileWriter("cm_total_reponse_time_" + new java.util.Date().getTime() + ".txt"));
+			System.out.println();
+			for (int i = 0; i < HOURS;i++)
+			{
+				System.out.print(totalSatisfaction[i] + ", ");
+				out.println(totalSatisfaction[i]);
+			}
+			out.close();
+
+			out = new PrintWriter(new FileWriter("cm_total_executionTime_" + new java.util.Date().getTime() + ".txt"));
+			System.out.println();
+			for (int i = 0; i < HOURS;i++)
+			{
+				System.out.print(totalExecutionTime[i] + ", ");
+				out.println(totalExecutionTime[i]);
+			}
+			out.close();
+
+			out = new PrintWriter(new FileWriter("cm_total_selection_" + new java.util.Date().getTime() + ".txt"));
+			System.out.println();
+			for (int i = 0; i < HOURS;i++)
+			{
+				System.out.print(totalSelection[i] + ", ");
+				out.println(totalSelection[i]);
+			}
+			out.close();
+			
+			out = new PrintWriter(new FileWriter("cm_total_indemand_" + new java.util.Date().getTime() + ".txt"));
+			System.out.println();
+			for (int i = 0; i < HOURS;i++)
+			{
+				System.out.print(totalInDemand[i] + ", ");
+				out.println(totalInDemand[i]);
+			}
+			out.close();
+
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 
 
-	private void simulateModelForWebServices(List<WebService> selectedList) 
+	public void simulateModelForWebServices(List<WebService> selectedList) 
 	{
-		
+
 		int HOURS = 100;
-		
+
 		double[] numberOfRequests = new double[HOURS];
 		double[] responseTime = new double[HOURS];
 		double[] contribution = new double[HOURS];
 		double[] replaceability = new double[HOURS];
-		
+
 		double[] totalNumberOfRequests = new double[HOURS];
 		double[] totalResponseTime = new double[HOURS];
 		double[] totalContribution = new double[HOURS];
 		double[] totalReplaceability = new double[HOURS];
 
 		Random random = new Random();
-		
+
 		for (WebService webService:selectedList) {
 			evaluateWebService(webService);
 			//System.out.println(webService.getRate());
@@ -567,12 +725,12 @@ public class Simulation {
 			responseTime[hour] = 0;
 			contribution[hour] = 0;
 			replaceability[hour] = 0;
-			
+
 			totalNumberOfRequests[hour] = 0;
 			totalResponseTime[hour] = 0;
 			totalContribution[hour] = 0;
 			totalReplaceability[hour] = 0;
-			
+
 			for (WebService webService:selectedList) {
 				if (webService.getRate() == 3) 
 				{
@@ -580,7 +738,7 @@ public class Simulation {
 					responseTime[hour] += (random.nextInt(15)/10.0) + 0.6;  // 0.6-2
 					contribution[hour] += (random.nextInt(4)) + 7;  // 7-10
 					replaceability[hour] += (random.nextInt(4)) + 7;  // 7-10
-															
+
 				} else if (webService.getRate() == 2) 
 				{
 					numberOfRequests[hour] += (random.nextInt(3)) + 4;  // 7-10
@@ -595,12 +753,12 @@ public class Simulation {
 					replaceability[hour] += (random.nextInt(3)) + 1;  // 7-10
 				} 
 			}
-			
+
 			numberOfRequests[hour] = numberOfRequests[hour]/selectedList.size();
 			responseTime[hour] = responseTime[hour]/selectedList.size();
 			contribution[hour] = contribution[hour]/selectedList.size();
 			replaceability[hour] = replaceability[hour]/selectedList.size();
-			
+
 			if (hour > 1) 
 			{
 				totalNumberOfRequests[hour] = numberOfRequests[hour] + totalNumberOfRequests[hour-1];
@@ -609,43 +767,166 @@ public class Simulation {
 				totalReplaceability[hour] = replaceability[hour] + totalReplaceability[hour-1];
 			}								
 		}		
-		
-		System.out.println();
-		for (int i = 0; i < HOURS;i++)
+
+		try {
+			PrintWriter out = new PrintWriter(new FileWriter("ws_number_of_requests_" + new java.util.Date().getTime() + ".txt")); 
+			System.out.println();
+			for (int i = 0; i < HOURS;i++)
+			{
+				System.out.print(totalNumberOfRequests[i] + ", ");
+				out.println(totalNumberOfRequests[i]);
+			}
+			out.close();
+
+			out = new PrintWriter(new FileWriter("ws_total_reponse_time_" + new java.util.Date().getTime() + ".txt"));
+			System.out.println();
+			for (int i = 0; i < HOURS;i++)
+			{
+				System.out.print(totalResponseTime[i] + ", ");
+				out.println(totalResponseTime[i]);
+			}
+			out.close();
+
+			out = new PrintWriter(new FileWriter("ws_total_contribution_" + new java.util.Date().getTime() + ".txt"));
+			System.out.println();
+			for (int i = 0; i < HOURS;i++)
+			{
+				System.out.print(totalContribution[i] + ", ");
+				out.println(totalContribution[i]);
+			}
+			out.close();
+
+			out = new PrintWriter(new FileWriter("ws_total_replaceability_" + new java.util.Date().getTime() + ".txt"));
+			System.out.println();
+			for (int i = 0; i < HOURS;i++)
+			{
+				System.out.print(totalReplaceability[i] + ", ");
+				out.println(totalReplaceability[i]);
+			}
+			out.close();
+
+		} catch (Exception e)
 		{
-			System.out.print(totalNumberOfRequests[i] + ", ");
+			e.printStackTrace();
 		}
-		
-		System.out.println();
-		for (int i = 0; i < HOURS;i++)
-		{
-			System.out.print(totalResponseTime[i] + ", ");
-		}
-		
-		System.out.println();
-		for (int i = 0; i < HOURS;i++)
-		{
-			System.out.print(totalContribution[i] + ", ");
-		}
-		
-		System.out.println();
-		for (int i = 0; i < HOURS;i++)
-		{
-			System.out.print(totalReplaceability[i] + ", ");
-		}
-		
-		
+
 	}
 
+	public void evaluateCommunity(WebService webService) 
+	{
+		int high = 0;
+		int medium = 0;
+		int low = 0;
+
+		int i = 0;
+
+		// Internal Connection
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // External Connection	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Productivity	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Resposiveness
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			low++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			high++;
+
+		i++; // In Demand
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Satisfaction
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Availability
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Popularity	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Selectivity	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Market Share
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Selection
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;		
+
+
+		if ((high >= medium) && (high >= low)) {
+			webService.setRate(3);			
+		} else if ((medium >= high) && (medium >= low)) {
+			webService.setRate(2);			
+		} else {
+			webService.setRate(1);			
+		}
+
+	}
 
 	private void evaluateWebService(WebService webService) 
 	{
 		int high = 0;
 		int medium = 0;
 		int low = 0;
-		
+
 		int i = 0;
-		
+
 		// Availability
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -653,7 +934,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Response Time		
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			low++;
@@ -661,7 +942,7 @@ public class Simulation {
 			medium++;
 		else 
 			high++;
-		
+
 		i++; // Throughput	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -669,7 +950,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Execution Time
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			low++;
@@ -677,7 +958,7 @@ public class Simulation {
 			medium++;
 		else 
 			high++;
-		
+
 		i++; // Latency
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			low++;
@@ -685,7 +966,7 @@ public class Simulation {
 			medium++;
 		else 
 			high++;
-		
+
 		i++; // Stability
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			low++;
@@ -693,7 +974,7 @@ public class Simulation {
 			medium++;
 		else 
 			high++;
-		
+
 		i++; // Reliability
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			low++;
@@ -701,7 +982,7 @@ public class Simulation {
 			medium++;
 		else 
 			high++;
-		
+
 		i++; // Accessibility	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -709,7 +990,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Direct Out Degree	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -717,7 +998,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Indirect Out Degree	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -725,7 +1006,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Interoperability	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -733,7 +1014,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Accuracy
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			low++;
@@ -741,7 +1022,7 @@ public class Simulation {
 			medium++;
 		else 
 			high++;
-		
+
 		i++; // Cooperative	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -749,7 +1030,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Replaceability	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -757,7 +1038,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-				
+
 		i++; // Contributability	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -765,8 +1046,8 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
-		
+
+
 		if ((high >= medium) && (high >= low)) {
 			webService.setRate(3);			
 		} else if ((medium >= high) && (medium >= low)) {
