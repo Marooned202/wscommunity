@@ -181,7 +181,7 @@ public class Simulation {
 			feature.setValue(Math.random());
 			feature.setName(Constants.WebServiceFeatureNames[featureNumber-1]);
 			webService.addWebServiceFeature(feature);
-			
+
 			feature = new WebServiceFeature(); // 4 Latency
 			feature.setId(featureNumber++);
 			feature.setValue((Math.random() * webService.getFeatureByID(1).getValue()) / 2);
@@ -542,21 +542,21 @@ public class Simulation {
 
 	private void simulateModelForWebServices(List<WebService> selectedList) 
 	{
-		
+
 		int HOURS = 100;
-		
+
 		double[] numberOfRequests = new double[HOURS];
 		double[] responseTime = new double[HOURS];
 		double[] contribution = new double[HOURS];
 		double[] replaceability = new double[HOURS];
-		
+
 		double[] totalNumberOfRequests = new double[HOURS];
 		double[] totalResponseTime = new double[HOURS];
 		double[] totalContribution = new double[HOURS];
 		double[] totalReplaceability = new double[HOURS];
 
 		Random random = new Random();
-		
+
 		for (WebService webService:selectedList) {
 			evaluateWebService(webService);
 			//System.out.println(webService.getRate());
@@ -567,12 +567,12 @@ public class Simulation {
 			responseTime[hour] = 0;
 			contribution[hour] = 0;
 			replaceability[hour] = 0;
-			
+
 			totalNumberOfRequests[hour] = 0;
 			totalResponseTime[hour] = 0;
 			totalContribution[hour] = 0;
 			totalReplaceability[hour] = 0;
-			
+
 			for (WebService webService:selectedList) {
 				if (webService.getRate() == 3) 
 				{
@@ -580,7 +580,7 @@ public class Simulation {
 					responseTime[hour] += (random.nextInt(15)/10.0) + 0.6;  // 0.6-2
 					contribution[hour] += (random.nextInt(4)) + 7;  // 7-10
 					replaceability[hour] += (random.nextInt(4)) + 7;  // 7-10
-															
+
 				} else if (webService.getRate() == 2) 
 				{
 					numberOfRequests[hour] += (random.nextInt(3)) + 4;  // 7-10
@@ -595,12 +595,12 @@ public class Simulation {
 					replaceability[hour] += (random.nextInt(3)) + 1;  // 7-10
 				} 
 			}
-			
+
 			numberOfRequests[hour] = numberOfRequests[hour]/selectedList.size();
 			responseTime[hour] = responseTime[hour]/selectedList.size();
 			contribution[hour] = contribution[hour]/selectedList.size();
 			replaceability[hour] = replaceability[hour]/selectedList.size();
-			
+
 			if (hour > 1) 
 			{
 				totalNumberOfRequests[hour] = numberOfRequests[hour] + totalNumberOfRequests[hour-1];
@@ -609,32 +609,32 @@ public class Simulation {
 				totalReplaceability[hour] = replaceability[hour] + totalReplaceability[hour-1];
 			}								
 		}		
-		
+
 		System.out.println();
 		for (int i = 0; i < HOURS;i++)
 		{
 			System.out.print(totalNumberOfRequests[i] + ", ");
 		}
-		
+
 		System.out.println();
 		for (int i = 0; i < HOURS;i++)
 		{
 			System.out.print(totalResponseTime[i] + ", ");
 		}
-		
+
 		System.out.println();
 		for (int i = 0; i < HOURS;i++)
 		{
 			System.out.print(totalContribution[i] + ", ");
 		}
-		
+
 		System.out.println();
 		for (int i = 0; i < HOURS;i++)
 		{
 			System.out.print(totalReplaceability[i] + ", ");
 		}
-		
-		
+
+
 	}
 
 
@@ -643,9 +643,9 @@ public class Simulation {
 		int high = 0;
 		int medium = 0;
 		int low = 0;
-		
+
 		int i = 0;
-		
+
 		// Availability
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -653,7 +653,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Response Time		
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			low++;
@@ -661,7 +661,7 @@ public class Simulation {
 			medium++;
 		else 
 			high++;
-		
+
 		i++; // Throughput	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -669,7 +669,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Execution Time
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			low++;
@@ -677,7 +677,7 @@ public class Simulation {
 			medium++;
 		else 
 			high++;
-		
+
 		i++; // Latency
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			low++;
@@ -685,7 +685,7 @@ public class Simulation {
 			medium++;
 		else 
 			high++;
-		
+
 		i++; // Stability
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			low++;
@@ -693,7 +693,7 @@ public class Simulation {
 			medium++;
 		else 
 			high++;
-		
+
 		i++; // Reliability
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			low++;
@@ -701,7 +701,7 @@ public class Simulation {
 			medium++;
 		else 
 			high++;
-		
+
 		i++; // Accessibility	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -709,7 +709,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Direct Out Degree	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -717,7 +717,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Indirect Out Degree	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -725,7 +725,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Interoperability	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -733,7 +733,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Accuracy
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			low++;
@@ -741,7 +741,7 @@ public class Simulation {
 			medium++;
 		else 
 			high++;
-		
+
 		i++; // Cooperative	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -749,7 +749,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
+
 		i++; // Replaceability	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -757,7 +757,7 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-				
+
 		i++; // Contributability	
 		if (webService.getFeatureByID(i).getValue() > 0.7) 
 			high++;
@@ -765,8 +765,8 @@ public class Simulation {
 			medium++;
 		else 
 			low++;
-		
-		
+
+
 		if ((high >= medium) && (high >= low)) {
 			webService.setRate(3);			
 		} else if ((medium >= high) && (medium >= low)) {
