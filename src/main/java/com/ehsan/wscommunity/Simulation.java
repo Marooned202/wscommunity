@@ -342,7 +342,7 @@ public class Simulation {
 
 		// Threshold
 
-		assignThresholdsAndWeights();
+		assignThresholdsAndWeightsForCommunities();
 
 		Cluster bestCluster = null;
 		double bestClusterGoodness = 0;
@@ -449,7 +449,7 @@ public class Simulation {
 
 		// Threshold
 
-		assignThresholdsAndWeights();
+		assignThresholdsAndWeightsForWebservices();
 
 		Cluster bestCluster = null;
 		double bestClusterGoodness = 0;
@@ -524,23 +524,23 @@ public class Simulation {
 	}
 
 
-	private void assignThresholdsAndWeights() 
+	private void assignThresholdsAndWeightsForWebservices() 
 	{	
 		int i = 0;
 
 		weight.clear();
 		weight.put(i++, 0.5);	
+		weight.put(i++, -0.5);	
+		weight.put(i++, 0.5);	
+		weight.put(i++, -0.5);	
+		weight.put(i++, -0.5);	
+		weight.put(i++, -0.5);	
+		weight.put(i++, -0.5);	
 		weight.put(i++, 0.5);	
 		weight.put(i++, 0.5);	
 		weight.put(i++, 0.5);	
 		weight.put(i++, 0.5);	
-		weight.put(i++, 0.5);	
-		weight.put(i++, 0.5);	
-		weight.put(i++, 0.5);	
-		weight.put(i++, 0.5);	
-		weight.put(i++, 0.5);	
-		weight.put(i++, 0.5);	
-		weight.put(i++, 0.5);	
+		weight.put(i++, -0.5);	
 		weight.put(i++, 0.5);	
 		weight.put(i++, 0.5);	
 		weight.put(i++, 0.5);	
@@ -562,6 +562,38 @@ public class Simulation {
 		threshold.put(i++, 0.5);
 		threshold.put(i++, 0.5);	
 		threshold.put(i++, 0.5);
+
+	}
+	
+	private void assignThresholdsAndWeightsForCommunities() 
+	{	
+		int i = 0;
+
+		weight.clear();
+		weight.put(i++, 0.5);	
+		weight.put(i++, 0.5);	
+		weight.put(i++, 0.5);	
+		weight.put(i++, -0.5);	
+		weight.put(i++, 0.5);	
+		weight.put(i++, 0.5);	
+		weight.put(i++, 0.5);	
+		weight.put(i++, 0.5);	
+		weight.put(i++, 0.5);	
+		weight.put(i++, 0.5);	
+		weight.put(i++, 0.5);				
+
+		i = 0;
+		threshold.put(i++, 0.5);
+		threshold.put(i++, 0.5);
+		threshold.put(i++, 0.5);
+		threshold.put(i++, 0.5);
+		threshold.put(i++, 0.5);
+		threshold.put(i++, 0.5);
+		threshold.put(i++, 0.5);
+		threshold.put(i++, 0.5);
+		threshold.put(i++, 0.5);
+		threshold.put(i++, 0.5);
+		threshold.put(i++, 0.5);				
 
 	}
 
@@ -705,7 +737,7 @@ public class Simulation {
 			}
 			out.close();
 
-			out = new PrintWriter(new FileWriter("cm_total_reponse_time_" + new java.util.Date().getTime() + ".txt"));
+			out = new PrintWriter(new FileWriter("cm_total_satisfaction_" + new java.util.Date().getTime() + ".txt"));
 			System.out.println();
 			for (int i = 0; i < HOURS;i++)
 			{
