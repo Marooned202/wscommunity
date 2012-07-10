@@ -514,7 +514,7 @@ public class Simulation {
 		for (WebService webService:webServiceList) {
 			evaluateWebServiceReputation(webService);
 			double reputation = webService.getReputaion();
-			reputation = (reputation * 0.5) + (webService.getFeatureByID(4).getValue() * 0.5);
+			reputation = (reputation * 0.2) + (webService.getFeatureByID(4).getValue() * 0.8);
 			webService.setReputaion(reputation);
 			log.info("WS-Reputation: " + webService.getReputaion());
 		}
@@ -570,7 +570,7 @@ public class Simulation {
 		for (WebService webService:webServiceList) {
 			evaluateCommunityReputation(webService);
 			double reputation = webService.getReputaion();
-			reputation = (reputation * 0.5) + (webService.getFeatureByID(4).getValue() * 0.5);
+			reputation = (reputation * 0.2) + (webService.getFeatureByID(4).getValue() * 0.8);
 			webService.setReputaion(reputation);
 			log.info("CM-Reputation: " + webService.getReputaion());
 		}
