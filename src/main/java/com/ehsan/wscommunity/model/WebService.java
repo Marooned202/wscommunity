@@ -13,6 +13,7 @@ public class WebService implements Agent {
 	int rate;
 	List<WebServiceFeature> featureList = new ArrayList <WebServiceFeature>();	
 	int cluster;	
+	double reputaion;
 	
 	public int getRate() {
 		return rate;
@@ -28,6 +29,14 @@ public class WebService implements Agent {
 
 	public void setCluster(int cluster) {
 		this.cluster = cluster;
+	}	
+
+	public double getReputaion() {
+		return reputaion;
+	}
+
+	public void setReputaion(double reputaion) {
+		this.reputaion = reputaion;
 	}
 
 	public double distance (Agent otherWebService)

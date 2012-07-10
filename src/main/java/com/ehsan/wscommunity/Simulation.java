@@ -346,7 +346,7 @@ public class Simulation {
 
 		Cluster bestCluster = null;
 		double bestClusterGoodness = 0;
-		
+
 		goodness.clear();
 		for (Cluster cluster:centroids) {
 			if (cluster.getCount() == 0) continue;
@@ -359,13 +359,13 @@ public class Simulation {
 			goodness.put(cluster, goodnessValue);
 			log.info("Goodness["+cluster.getCluster()+"]: " + df.format(goodnessValue) + ", Count: " + cluster.getCount());
 			log.info("Goodness["+cluster.getCluster()+"]: " + logLine);
-			
+
 			if (goodnessValue > bestClusterGoodness) {
 				bestClusterGoodness = goodnessValue;
 				bestCluster = cluster;
 			}
 		}	
-		
+
 		List <WebService> selectedList = new ArrayList<WebService>();
 		// Reporting Best Cluster and its members
 		log.info("Best Cluster: " + bestCluster.getCluster() + " ,Goodness Value: " + bestClusterGoodness);
@@ -488,13 +488,13 @@ public class Simulation {
 
 		return selectedList;
 	}
-	
-	
-	
+
+
+
 	public List <WebService> runWebServiceRandomSelecton (int size)
 	{		
 		List <WebService> selectedList = new ArrayList<WebService>();
-		
+
 		Random random = new Random();
 		for (int i = 0; i < size; i++) {
 			WebService selected = webServiceList.get(random.nextInt(webServiceList.size()));
@@ -506,11 +506,48 @@ public class Simulation {
 
 		return selectedList;
 	}
-	
+
+	public List <WebService> runWebServiceReputationSelecton (int size)
+	{		
+		List <WebService> selectedList = new ArrayList<WebService>();
+
+		for (WebService webService:webServiceList) {
+			evaluateWebServiceReputation(webService);
+			log.info("Reputation: " + webService.getReputaion());
+		}
+
+		List <WebService> list = new ArrayList<WebService>();
+		list.addAll(webServiceList);
+
+		WebService temp;
+		if (list.size()>1) // check if the number of orders is larger than 1
+		{
+			for (int x=0; x<list.size(); x++) // bubble sort outer loop
+			{
+				for (int i=0; i < list.size() - x - 1; i++) {
+					if (list.get(i).getReputaion() < list.get(i+1).getReputaion())
+					{
+						temp = list.get(i);
+						list.set(i,list.get(i+1) );
+						list.set(i+1, temp);
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < size; i++) {
+			WebService selected = list.get(i);
+			log.info("Reputaion Sort: " + selected.getReputaion());
+			selectedList.add(selected);
+		}
+
+		return selectedList;
+	}
+
 	public List <WebService> runCommunityRandomSelecton (int size)
 	{		
 		List <WebService> selectedList = new ArrayList<WebService>();
-		
+
 		Random random = new Random();
 		for (int i = 0; i < size; i++) {
 			WebService selected = webServiceList.get(random.nextInt(webServiceList.size()));
@@ -518,6 +555,45 @@ public class Simulation {
 				i--;
 			else 
 				selectedList.add(selected);
+		}
+
+		return selectedList;
+	}
+
+	public List <WebService> runCommunityReputationSelecton (int size)
+	{		
+		List <WebService> selectedList = new ArrayList<WebService>();
+
+		for (WebService webService:webServiceList) {
+			evaluateCommunityReputation(webService);
+			double reputation = webService.getReputaion();
+			reputation = (reputation * 0.5) + (webService.getFeatureByID(4).getValue() * 0.5);
+			log.info("Reputation: " + webService.getReputaion());
+		}
+
+		List <WebService> list = new ArrayList<WebService>();
+		list.addAll(webServiceList);
+
+		WebService temp;
+		if (list.size()>1)
+		{
+			for (int x=0; x<list.size(); x++) 
+			{
+				for (int i=0; i < list.size() - x - 1; i++) {
+					if (list.get(i).getReputaion() < list.get(i+1).getReputaion())
+					{
+						temp = list.get(i);
+						list.set(i,list.get(i+1) );
+						list.set(i+1, temp);
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < size; i++) {
+			WebService selected = list.get(i);
+			log.info("Reputaion Sort: " + selected.getReputaion());
+			selectedList.add(selected);
 		}
 
 		return selectedList;
@@ -564,7 +640,7 @@ public class Simulation {
 		threshold.put(i++, 0.5);
 
 	}
-	
+
 	private void assignThresholdsAndWeightsForCommunities() 
 	{	
 		int i = 0;
@@ -622,30 +698,36 @@ public class Simulation {
 	public void run ()
 	{
 		List <WebService> selectedList = null;
-				
+
 		// Web  Services Simulation
 		initializeWebService();
 		reportWebServices(2);
 		reportCentroids(2);
-		
+
 		selectedList = runWebServiceClusteringSelecton();
 		simulateModelForWebServices (selectedList);
-		
+
 		selectedList = runWebServiceRandomSelecton(selectedList.size());				
 		simulateModelForWebServices (selectedList);
-		
-			
+
+		selectedList = runWebServiceReputationSelecton(selectedList.size());				
+		simulateModelForWebServices (selectedList);
+
+
 		// Community Simulation
 		initializeCommunity();
 		reportWebServices(2);
 		reportCentroids(2);
-		
+
 		selectedList = runCommunitiesClusteringSelection();				
 		simulateModelForCommunities (selectedList);
-		
+
 		selectedList = runCommunityRandomSelecton(selectedList.size());
 		simulateModelForCommunities (selectedList);
-	
+
+		selectedList = runCommunityReputationSelecton(selectedList.size());
+		simulateModelForCommunities (selectedList);
+
 	}
 
 	public void simulateModelForCommunities(List<WebService> selectedList) 
@@ -763,7 +845,7 @@ public class Simulation {
 				out.println(totalSelection[i]);
 			}
 			out.close();
-			
+
 			out = new PrintWriter(new FileWriter("cm_total_indemand_" + new java.util.Date().getTime() + ".txt"));
 			System.out.println();
 			for (int i = 0; i < HOURS;i++)
@@ -1139,4 +1221,251 @@ public class Simulation {
 		}
 
 	}
+
+	public void evaluateCommunityReputation(WebService webService) 
+	{
+		int high = 0;
+		int medium = 0;
+		int low = 0;
+
+		int i = 0;
+
+		// Internal Connection
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // External Connection	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Productivity	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Resposiveness
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			low++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			high++;
+
+		i++; // In Demand
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Satisfaction
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Availability
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Popularity	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Selectivity	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Market Share
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Selection
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;		
+
+		Random random = new Random();
+		if ((high >= medium) && (high >= low)) {
+			webService.setReputaion(((random.nextInt()%30)/100.0) + 0.7);			
+		} else if ((medium >= high) && (medium >= low)) {
+			webService.setReputaion(((random.nextInt()%40)/100.0) + 0.3);						
+		} else {
+			webService.setReputaion(((random.nextInt()%30)/100.0));		
+		}
+
+	}
+
+	public void evaluateWebServiceReputation(WebService webService) 
+	{
+		int high = 0;
+		int medium = 0;
+		int low = 0;
+
+		int i = 0;
+
+		// Availability
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Response Time		
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			low++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			high++;
+
+		i++; // Throughput	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Execution Time
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			low++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			high++;
+
+		i++; // Latency
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			low++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			high++;
+
+		i++; // Stability
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			low++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			high++;
+
+		i++; // Reliability
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			low++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			high++;
+
+		i++; // Accessibility	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Direct Out Degree	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Indirect Out Degree	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Interoperability	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Accuracy
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			low++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			high++;
+
+		i++; // Cooperative	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Replaceability	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		i++; // Contributability	
+		if (webService.getFeatureByID(i).getValue() > 0.7) 
+			high++;
+		else if (webService.getFeatureByID(i).getValue() > 0.4)
+			medium++;
+		else 
+			low++;
+
+		Random random = new Random();
+		if ((high >= medium) && (high >= low)) {
+			webService.setReputaion(((random.nextInt()%30)/100.0) + 0.7);			
+		} else if ((medium >= high) && (medium >= low)) {
+			webService.setReputaion(((random.nextInt()%40)/100.0) + 0.3);						
+		} else {
+			webService.setReputaion(((random.nextInt()%30)/100.0));		
+		}
+
+	}
+
 }
