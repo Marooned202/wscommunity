@@ -626,6 +626,7 @@ public class Simulation {
 		weight.put(i++, 0.5);	
 
 		i = 0;
+		threshold.clear();
 		threshold.put(i++, 0.5);
 		threshold.put(i++, 0.5);
 		threshold.put(i++, 0.5);
@@ -663,6 +664,7 @@ public class Simulation {
 		weight.put(i++, 0.5);				
 
 		i = 0;
+		threshold.clear();
 		threshold.put(i++, 0.5);
 		threshold.put(i++, 0.5);
 		threshold.put(i++, 0.5);
