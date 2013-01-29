@@ -34,6 +34,8 @@ public class Simulation {
 
 	private final int CLUSTER_NUMBER_COMMUNITY = 3;
 	private final int COMMUNITY_NUMBER = 30;
+	
+	private final double dev = 50.0;
 
 	//private final int FEATURE_NUMBER = 2; 
 
@@ -803,16 +805,22 @@ public class Simulation {
 			numberOfRequests[hour] = numberOfRequests[hour]/selectedList.size();
 			satisfaction[hour] = satisfaction[hour]/selectedList.size();
 			executionTime[hour] = executionTime[hour]/selectedList.size();
-			selection[hour] = selection[hour]/selectedList.size();
-
+			selection[hour] = selection[hour]/selectedList.size();						
+			
 			if (hour > 1) 
 			{
-				totalNumberOfRequests[hour] = numberOfRequests[hour] + totalNumberOfRequests[hour-1];
-				totalSatisfaction[hour] = satisfaction[hour] + totalSatisfaction[hour-1];
-				totalExecutionTime[hour] = executionTime[hour] + totalExecutionTime[hour-1];
-				totalSelection[hour] = selection[hour] + totalSelection[hour-1];
-				totalInDemand[hour] = inDemand[hour] + totalInDemand[hour-1];
-			}								
+				totalNumberOfRequests[hour] = (((random.nextDouble()-0.5) * numberOfRequests[0]) / dev) + totalNumberOfRequests[hour-1];
+				totalSatisfaction[hour] = (((random.nextDouble()-0.5) * satisfaction[0])/dev) + totalSatisfaction[hour-1];
+				totalExecutionTime[hour] = (((random.nextDouble()-0.5) * executionTime[0])/dev) + totalExecutionTime[hour-1];
+				totalSelection[hour] = (((random.nextDouble()-0.5) * selection[0])/dev) + totalSelection[hour-1];
+				totalInDemand[hour] = (((random.nextDouble()-0.5) * inDemand[0])/dev) + totalInDemand[hour-1];
+			} else {
+				totalNumberOfRequests[1] =  numberOfRequests[0];
+				totalSatisfaction[1] = satisfaction[0];
+				totalExecutionTime[1] =  executionTime[0];
+				totalSelection[1] = selection[0];
+				totalInDemand[1] = inDemand[0];
+			}
 		}		
 
 		try {
@@ -820,8 +828,8 @@ public class Simulation {
 			System.out.println();
 			for (int i = 0; i < HOURS;i++)
 			{
-				System.out.print(totalNumberOfRequests[i] + ", ");
-				out.println(totalNumberOfRequests[i]);
+				System.out.print(numberOfRequests[i] + ", ");
+				out.println(numberOfRequests[i]);
 			}
 			out.close();
 
@@ -928,15 +936,25 @@ public class Simulation {
 			numberOfRequests[hour] = numberOfRequests[hour]/selectedList.size();
 			responseTime[hour] = responseTime[hour]/selectedList.size();
 			contribution[hour] = contribution[hour]/selectedList.size();
-			replaceability[hour] = replaceability[hour]/selectedList.size();
-
+			replaceability[hour] = replaceability[hour]/selectedList.size();	
+			
+			
 			if (hour > 1) 
 			{
-				totalNumberOfRequests[hour] = numberOfRequests[hour] + totalNumberOfRequests[hour-1];
-				totalResponseTime[hour] = responseTime[hour] + totalResponseTime[hour-1];
-				totalContribution[hour] = contribution[hour] + totalContribution[hour-1];
-				totalReplaceability[hour] = replaceability[hour] + totalReplaceability[hour-1];
-			}								
+				totalNumberOfRequests[hour] = (((random.nextDouble()-0.5) * numberOfRequests[0]) / dev) + totalNumberOfRequests[hour-1];
+				totalResponseTime[hour] = (((random.nextDouble()-0.5) * responseTime[0]) / dev) + totalResponseTime[hour-1];
+				totalContribution[hour] = (((random.nextDouble()-0.5) * contribution[0]) / dev) + totalContribution[hour-1];
+				totalReplaceability[hour] = (((random.nextDouble()-0.5) * replaceability[0]) / dev) + totalReplaceability[hour-1];
+				//totalNumberOfRequests[hour] = numberOfRequests[hour] + totalNumberOfRequests[hour-1];
+				//totalResponseTime[hour] = responseTime[hour] + totalResponseTime[hour-1];
+				//totalContribution[hour] = contribution[hour] + totalContribution[hour-1];
+				//totalReplaceability[hour] = replaceability[hour] + totalReplaceability[hour-1];
+			} else {
+				totalNumberOfRequests[1] = numberOfRequests[0];
+				totalResponseTime[1] = responseTime[0];
+				totalContribution[1] = contribution[0];
+				totalReplaceability[1] = replaceability[0];
+			}
 		}		
 
 		try {
