@@ -513,10 +513,7 @@ public class Simulation {
 
 		for (WebService webService:webServiceList) {
 			evaluateWebServiceReputation(webService);
-			double reputation = webService.getReputaion();
-			reputation = (reputation * 0.2) + (webService.getFeatureByID(4).getValue() * 0.8);
-			webService.setReputaion(reputation);
-			log.info("WS-Reputation: " + webService.getReputaion());
+			log.info("Reputation: " + webService.getReputaion());
 		}
 
 		List <WebService> list = new ArrayList<WebService>();
@@ -570,9 +567,8 @@ public class Simulation {
 		for (WebService webService:webServiceList) {
 			evaluateCommunityReputation(webService);
 			double reputation = webService.getReputaion();
-			reputation = (reputation * 0.2) + (webService.getFeatureByID(4).getValue() * 0.8);
-			webService.setReputaion(reputation);
-			log.info("CM-Reputation: " + webService.getReputaion());
+			reputation = (reputation * 0.5) + (webService.getFeatureByID(4).getValue() * 0.5);
+			log.info("Reputation: " + webService.getReputaion());
 		}
 
 		List <WebService> list = new ArrayList<WebService>();
@@ -626,7 +622,6 @@ public class Simulation {
 		weight.put(i++, 0.5);	
 
 		i = 0;
-		threshold.clear();
 		threshold.put(i++, 0.5);
 		threshold.put(i++, 0.5);
 		threshold.put(i++, 0.5);
@@ -664,7 +659,6 @@ public class Simulation {
 		weight.put(i++, 0.5);				
 
 		i = 0;
-		threshold.clear();
 		threshold.put(i++, 0.5);
 		threshold.put(i++, 0.5);
 		threshold.put(i++, 0.5);
@@ -820,8 +814,8 @@ public class Simulation {
 			System.out.println();
 			for (int i = 0; i < HOURS;i++)
 			{
-				System.out.print(totalNumberOfRequests[i] + ", ");
-				out.println(totalNumberOfRequests[i]);
+				System.out.print(numberOfRequests[i] + ", ");
+				out.println(numberOfRequests[i]);
 			}
 			out.close();
 
@@ -829,8 +823,8 @@ public class Simulation {
 			System.out.println();
 			for (int i = 0; i < HOURS;i++)
 			{
-				System.out.print(totalSatisfaction[i] + ", ");
-				out.println(totalSatisfaction[i]);
+				System.out.print(satisfaction[i] + ", ");
+				out.println(satisfaction[i]);
 			}
 			out.close();
 
@@ -838,8 +832,8 @@ public class Simulation {
 			System.out.println();
 			for (int i = 0; i < HOURS;i++)
 			{
-				System.out.print(totalExecutionTime[i] + ", ");
-				out.println(totalExecutionTime[i]);
+				System.out.print(executionTime[i] + ", ");
+				out.println(executionTime[i]);
 			}
 			out.close();
 
@@ -847,8 +841,8 @@ public class Simulation {
 			System.out.println();
 			for (int i = 0; i < HOURS;i++)
 			{
-				System.out.print(totalSelection[i] + ", ");
-				out.println(totalSelection[i]);
+				System.out.print(selection[i] + ", ");
+				out.println(selection[i]);
 			}
 			out.close();
 
@@ -856,8 +850,8 @@ public class Simulation {
 			System.out.println();
 			for (int i = 0; i < HOURS;i++)
 			{
-				System.out.print(totalInDemand[i] + ", ");
-				out.println(totalInDemand[i]);
+				System.out.print(inDemand[i] + ", ");
+				out.println(inDemand[i]);
 			}
 			out.close();
 
@@ -944,8 +938,8 @@ public class Simulation {
 			System.out.println();
 			for (int i = 0; i < HOURS;i++)
 			{
-				System.out.print(totalNumberOfRequests[i] + ", ");
-				out.println(totalNumberOfRequests[i]);
+				System.out.print(numberOfRequests[i] + ", ");
+				out.println(numberOfRequests[i]);
 			}
 			out.close();
 
@@ -953,8 +947,8 @@ public class Simulation {
 			System.out.println();
 			for (int i = 0; i < HOURS;i++)
 			{
-				System.out.print(totalResponseTime[i] + ", ");
-				out.println(totalResponseTime[i]);
+				System.out.print(responseTime[i] + ", ");
+				out.println(responseTime[i]);
 			}
 			out.close();
 
@@ -962,8 +956,8 @@ public class Simulation {
 			System.out.println();
 			for (int i = 0; i < HOURS;i++)
 			{
-				System.out.print(totalContribution[i] + ", ");
-				out.println(totalContribution[i]);
+				System.out.print(contribution[i] + ", ");
+				out.println(contribution[i]);
 			}
 			out.close();
 
@@ -971,8 +965,8 @@ public class Simulation {
 			System.out.println();
 			for (int i = 0; i < HOURS;i++)
 			{
-				System.out.print(totalReplaceability[i] + ", ");
-				out.println(totalReplaceability[i]);
+				System.out.print(replaceability[i] + ", ");
+				out.println(replaceability[i]);
 			}
 			out.close();
 
