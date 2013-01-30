@@ -774,7 +774,7 @@ public class Simulation {
 				if (webService.getRate() == 3) 
 				{
 					numberOfRequests[hour] += (random.nextInt(4)) + 7;  // 7-10
-					satisfaction[hour] += (random.nextInt(4)) + 7; // 7-10
+					satisfaction[hour] += (random.nextInt(4)/10.0) + 0.7;  // 0.7-1
 					executionTime[hour] += (random.nextInt(15)) + 6;  // 6-20
 					selection[hour] += (random.nextInt(4)/10.0) + 0.7;  // 0.7-1
 					inDemand[hour] += (random.nextInt(4)) + 7;  // 7-10
@@ -782,14 +782,14 @@ public class Simulation {
 				} else if (webService.getRate() == 2) 
 				{
 					numberOfRequests[hour] += (random.nextInt(3)) + 4;  // 7-10
-					satisfaction[hour] += (random.nextInt(3)) + 4; // 7-10
+					satisfaction[hour] += (random.nextInt(3)/10.0) + 0.4;  // 0.7-1
 					executionTime[hour] += (random.nextInt(11)) + 25;  // 6-20
 					selection[hour] += (random.nextInt(3)/10.0) + 0.4;  // 0.7-1
 					inDemand[hour] += (random.nextInt(3)) + 4;  // 7-10
 				} else if (webService.getRate() == 1) 
 				{
 					numberOfRequests[hour] += (random.nextInt(3)) + 1;  // 7-10
-					satisfaction[hour] += (random.nextInt(3)) + 1; // 7-10
+					satisfaction[hour] += (random.nextInt(3)/10.0) + 0.1;  // 0.7-1
 					executionTime[hour] += (random.nextInt(19)) + 42;  // 6-20
 					selection[hour] += (random.nextInt(3)/10.0) + 0.1;  // 0.7-1
 					inDemand[hour] += (random.nextInt(3)) + 1;  // 7-10
@@ -909,20 +909,20 @@ public class Simulation {
 				{
 					numberOfRequests[hour] += (random.nextInt(4)) + 7;  // 7-10
 					responseTime[hour] += (random.nextInt(15)/10.0) + 0.6;  // 0.6-2
-					contribution[hour] += (random.nextInt(4)) + 7;  // 7-10
+					contribution[hour] += (random.nextInt(4)/10.0) + 0.7;  // 0.7-1
 					replaceability[hour] += (random.nextInt(4)) + 7;  // 7-10
 
 				} else if (webService.getRate() == 2) 
 				{
 					numberOfRequests[hour] += (random.nextInt(3)) + 4;  // 7-10
 					responseTime[hour] += (random.nextInt(11)/10.0) + 2.5;  // 0.6-2
-					contribution[hour] += (random.nextInt(3)) + 4;  // 7-10
+					contribution[hour] += (random.nextInt(3)/10.0) + 0.4;  // 0.7-1
 					replaceability[hour] += (random.nextInt(3)) + 4;  // 7-10
 				} else if (webService.getRate() == 1) 
 				{
 					numberOfRequests[hour] += (random.nextInt(3)) + 1;  // 7-10
 					responseTime[hour] += (random.nextInt(19)/10.0) + 4.2;  // 0.6-2
-					contribution[hour] += (random.nextInt(3)) + 1;  // 7-10
+					contribution[hour] += (random.nextInt(3)/10.0) + 0.1;  // 0.7-1
 					replaceability[hour] += (random.nextInt(3)) + 1;  // 7-10
 				} 
 			}
